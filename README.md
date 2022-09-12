@@ -8,7 +8,7 @@ Part of the functionality is an API call will have to be made to retrieve the wi
 First part of the project:
 
 [x] Set up a basic route to allow the viewing of a basic page
-[] Set up functionality to return text
+[x] Set up functionality to return text
 [] Investigate API call to bring in previous winners
 [] Show this on page
 [] Logic to find the most popular numbers
