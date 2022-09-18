@@ -18,28 +18,46 @@ def return_best_numbers():
     balls = []
     lucky_balls = []
     ball_counter = {}
+    lucky_ball_counter = {}
     with api_call(CSV_URL) as r:
         df = return_dataframe_from_api(r)
         extract_numbers_from_dataframe(balls, lucky_balls, df)
-        print("BALLS", balls)
+        # print("BALLS", balls)
         print("LUCKY BALLS", lucky_balls)
         for number in balls:
             if number not in ball_counter:
                 ball_counter[number] = 1
             else:
                 ball_counter[number] += 1
+        for number in lucky_balls:
+            if number not in lucky_ball_counter:
+                lucky_ball_counter[number] = 1
+            else:
+                lucky_ball_counter[number] +=1
         best_numbers = []
-        print("BALL COUNTER", ball_counter)
+        best_lucky_balls = []
+        print("LUCKY_BALL_COUNTER", lucky_ball_counter)
+        # print("BALL COUNTER", ball_counter)
         for key in ball_counter:
-            if len(best_numbers) < 6:
+            if len(best_numbers) < 5:
                 best_numbers.append(key)
-            elif ball_counter[best_numbers[5]] < ball_counter[key]:
-                best_numbers[5] = key
             else:
                 for i in range(len(best_numbers)):
                     if ball_counter[best_numbers[i]] < ball_counter[key]:
-                        best_numbers[i] = key
+                        best_numbers.insert(i, key)
+                        best_numbers.pop()
                         break;
+        for key in lucky_ball_counter:
+            if len(best_lucky_balls) < 2:
+                best_lucky_balls.append(key)
+            else:
+                for i in range(len(best_lucky_balls)):
+                    if lucky_ball_counter[best_lucky_balls[i]] < lucky_ball_counter[key]:
+                        best_lucky_balls.insert(i, key)
+                        best_lucky_balls.pop()
+                        break;
+        print("BEST LUCKY BALLS", best_lucky_balls)
+        print("BEST NUMBERS", best_numbers)
         table = df.to_html()
         return table
 
