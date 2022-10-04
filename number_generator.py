@@ -1,65 +1,31 @@
 import random
 import requests
 import csv
+import json
 
 import pandas as pd
-
-numbers = [12, 4, 6, 83]
 
 CSV_URL = "https://www.national-lottery.co.uk/results/euromillions/draw-history/csv"
 main_balls_headers = ['Ball 1', 'Ball 2', 'Ball 3', 'Ball 4', 'Ball 5']
 lucky_balls_headers = ['Lucky Star 1', 'Lucky Star 2']
-
-def generate():
-    number = random.choice(numbers)
-    return f"<h1>{number}</h1>"
 
 def return_best_numbers():
     balls = []
     lucky_balls = []
     ball_counter = {}
     lucky_ball_counter = {}
+    best_numbers = []
+    best_lucky_balls = []
     with api_call(CSV_URL) as r:
         df = return_dataframe_from_api(r)
         extract_numbers_from_dataframe(balls, lucky_balls, df)
-        # print("BALLS", balls)
-        print("LUCKY BALLS", lucky_balls)
-        for number in balls:
-            if number not in ball_counter:
-                ball_counter[number] = 1
-            else:
-                ball_counter[number] += 1
-        for number in lucky_balls:
-            if number not in lucky_ball_counter:
-                lucky_ball_counter[number] = 1
-            else:
-                lucky_ball_counter[number] +=1
-        best_numbers = []
-        best_lucky_balls = []
-        print("LUCKY_BALL_COUNTER", lucky_ball_counter)
-        # print("BALL COUNTER", ball_counter)
-        for key in ball_counter:
-            if len(best_numbers) < 5:
-                best_numbers.append(key)
-            else:
-                for i in range(len(best_numbers)):
-                    if ball_counter[best_numbers[i]] < ball_counter[key]:
-                        best_numbers.insert(i, key)
-                        best_numbers.pop()
-                        break;
-        for key in lucky_ball_counter:
-            if len(best_lucky_balls) < 2:
-                best_lucky_balls.append(key)
-            else:
-                for i in range(len(best_lucky_balls)):
-                    if lucky_ball_counter[best_lucky_balls[i]] < lucky_ball_counter[key]:
-                        best_lucky_balls.insert(i, key)
-                        best_lucky_balls.pop()
-                        break;
-        print("BEST LUCKY BALLS", best_lucky_balls)
-        print("BEST NUMBERS", best_numbers)
-        table = df.to_html()
-        return table
+        countBallFrequency(balls, ball_counter)
+        countBallFrequency(lucky_balls, lucky_ball_counter)
+        priorityQueue(ball_counter, best_numbers, 5)
+        priorityQueue(lucky_ball_counter, best_lucky_balls, 2)
+        return json.dumps({"best_numbers": best_numbers,
+                "best_lucky_balls": best_lucky_balls
+                })
 
 def api_call(url):
     return requests.get(url, stream=True)
@@ -80,10 +46,25 @@ def extract_numbers_from_dataframe(balls, lucky_balls, df):
         for header in lucky_balls_headers:
             lucky_balls.append(row[1][header])
 
-def hash_key(hash):
-    return hash['']
+def priorityQueue(ball_count_obj, best_balls_arr, num_balls_to_ret):
+    for key in ball_count_obj:
+        if len(best_balls_arr) < num_balls_to_ret:
+            best_balls_arr.append(key)
+        else:
+            for i in range(len(best_balls_arr)):
+                if ball_count_obj[best_balls_arr[i]] < ball_count_obj[key]:
+                    best_balls_arr.insert(i, key)
+                    best_balls_arr.pop()
+                    break;
+    return best_balls_arr
+
+def countBallFrequency(ball_arr, ball_count_obj):
+    for number in ball_arr:
+        if number not in ball_count_obj:
+            ball_count_obj[number] = 1
+        else:
+            ball_count_obj[number] += 1
+    return ball_count_obj
+
 
 return_best_numbers()
-
-    # text = json.dumps(response.json(), sort_keys=True, indent=4)
-    # return f"<h1>{response.status_code}</h1>"

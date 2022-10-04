@@ -7,7 +7,7 @@ app.config["DEBUG"] = True
 @app.route('/feelinglucky', methods=["GET"])
 
 def user_interface():
-    return number_generator.api_call()
+    return number_generator.return_best_numbers()
 
 @app.route('/', methods=["GET"])
 
