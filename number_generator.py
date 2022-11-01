@@ -51,7 +51,7 @@ def priorityQueue(ball_count_obj, best_balls_arr, num_balls_to_ret):
         if len(best_balls_arr) < num_balls_to_ret:
             best_balls_arr.append(key)
         else:
-            for i in range(len(best_balls_arr)):
+            for i in reversed(range(len(best_balls_arr))):
                 if ball_count_obj[best_balls_arr[i]] < ball_count_obj[key]:
                     best_balls_arr.insert(i, key)
                     best_balls_arr.pop()
