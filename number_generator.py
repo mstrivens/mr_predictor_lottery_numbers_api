@@ -10,12 +10,8 @@ main_balls_headers = ['Ball 1', 'Ball 2', 'Ball 3', 'Ball 4', 'Ball 5']
 lucky_balls_headers = ['Lucky Star 1', 'Lucky Star 2']
 
 def return_best_numbers():
-    balls = []
-    lucky_balls = []
-    ball_counter = {}
-    lucky_ball_counter = {}
-    best_numbers = []
-    best_lucky_balls = []
+    balls, lucky_balls, best_numbers, best_lucky_balls = [], [], [], []
+    ball_counter, lucky_ball_counter = {}, {}
     with api_call(CSV_URL) as r:
         df = return_dataframe_from_api(r)
         extract_numbers_from_dataframe(balls, lucky_balls, df)
